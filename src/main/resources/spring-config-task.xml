@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+          default-lazy-init="true">
+
+    <!-- 如下实现是通过线程池执行的 -->
+    <task:executor id="executor" pool-size="10"/>
+    <task:scheduler id="scheduler" pool-size="10"/>
+    <task:annotation-driven scheduler="scheduler" executor="executor" proxy-target-class="true"/>
+    
+    <bean id="synchronizeIMSDataTask" class="cn.cnyirui.ims.task.SynchronizeIMSDataTask">
+    	<property name="IMSOrganizationRootId" value="10"/>
+    </bean>
+	<task:scheduled-tasks>
+		<!-- 每天凌晨1点 同步产品分类、产品、组织架构、员工、员工工资 -->
+		<task:scheduled ref="synchronizeIMSDataTask" method="synchronizeIMSBasicData" cron="0 0 1 * * ?" />
+		<!-- 每月5号凌晨4点 销量上报-->
+		<task:scheduled ref="synchronizeIMSDataTask" method="synchronizeIMSSalesOrder" cron="0 0 4 5 * ?" />
+		
+		<!-- 每天凌晨6点 栓查是否有同步失败的记录，有失败的记录再重新同步一次-->
+		<task:scheduled ref="synchronizeIMSDataTask" method="executeFailedIMSTask" cron="0 0 6 * * ?" />
+		
+		<!-- 每天凌晨3点 清空临时数据-->
+		<task:scheduled ref="synchronizeIMSDataTask" method="deleteTempData" cron="0 0 3 * * ?" />							
+	</task:scheduled-tasks>	 
+    
+</beans>

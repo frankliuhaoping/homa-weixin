@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+          default-lazy-init="true">
+          	
+    <!--- RememberMecookie -->
+    <bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+ 		<property name="cookie.name" value="${shiro.rememeberMe.cookie.name}"/> 
+        <!-- <property name="cookie.domain" value="${shiro.cookie.domain}"/>  --> 
+        <property name="cookie.path" value="${shiro.cookie.path}"/> 
+        <property name="cookie.httpOnly" value="${shiro.cookie.httpOnly}"/>  
+        <property name="cookie.maxAge" value="${shiro.rememeberMe.cookie.maxAge}"/>   
+    </bean>   	
+    <!-- sessionManager -->   
+    <bean id="shiroSessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+        <!-- session存储的实现 -->  
+        <property name="sessionDAO" ref="shiroSessionDao" />    
+		<!-- memecached -->
+		<property name="cacheManager" ref="shiroCacheManager" />         
+        <!-- 设置全局会话超时时间，默认30分钟(1800000) -->  
+        <property name="globalSessionTimeout" value="${shiro.session.globalSessionTimeout}" />  
+        <!-- 是否在会话过期后会调用SessionDAO的delete方法删除会话 默认true -->  
+        <property name="deleteInvalidSessions" value="true" />          
+        <property name="sessionIdCookie.name" value="${shiro.sessionId.cookie.name}"/>
+        <!-- <property name="sessionIdCookie.domain" value="${shiro.cookie.domain}"/>  --> 
+        <property name="sessionIdCookie.path" value="${shiro.cookie.path}"/>  
+        <property name="sessionIdCookie.httpOnly" value="${shiro.cookie.httpOnly}"/> 
+        <!-- 定时检查失效的session -->  
+        <property name="sessionValidationSchedulerEnabled" value="true" />
+        <!-- 会话验证器调度时间 -->  
+        <property name="sessionValidationInterval" value="${shiro.session.validation.interval}" />  
+        <property name="sessionValidationScheduler" ref="sessionValidationScheduler"/>                
+    </bean>
+	<bean id="sessionValidationScheduler" class="org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler">
+		<property name="sessionManager" ref="shiroSessionManager"/>
+	    <property name="interval" value="${shiro.session.validation.interval}"/>
+	</bean>    
+    
+	<!-- securityManager -->
+	<bean id="shiroSecurityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="shiroDbRealm" />
+		<property name="cacheManager" ref="shiroCacheManager" />		
+        <property name="sessionManager" ref="shiroSessionManager"/>
+        <property name="rememberMeManager" ref="rememberMeManager" /> 		
+	</bean>      
+    	
+	<!-- 項目自定义的Realm -->
+	<!-- 客户端的回调地址设置，必须和下面的shiro-cas过滤器拦截的地址一致 -->
+	<!--shiro过滤器配置，bean的id值须与web中的filter-name的值相同 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="shiroSecurityManager" />
+		<property name="loginUrl" value="/rbac/login/showForm" />
+		<property name="successUrl" value="" />
+		<!-- 用户访问未对其授权的资源时,所显示的连接 -->
+		<property name="unauthorizedUrl" value="/" />
+		<property name="filters">
+			<util:map>
+				<entry key="authc" value-ref="formFilter" />
+				<entry key="weiXinUser" value-ref="weiXinUserFilter" />
+				<entry key="weiXinAuthc" value-ref="weiXinAuthcFilter" />
+			</util:map>
+		</property>		
+		<!-- Shiro连接约束配置,即过滤链的定义 -->
+		<!-- anon：它对应的过滤器里面是空的,什么都没做,这里.do和.jsp后面的*表示参数,比方说login.jsp?main这种 -->
+		<!-- authc：该过滤器下的页面必须验证后才能访问,它是Shiro内置的一个拦截器org.apache.shiro.web.filter.authc.FormAuthenticationFilter -->
+		<property name="filterChainDefinitions">
+			<value>
+				/static/**=anon
+				/upload/**=anon
+				/rbac/login/**=anon		
+				/rbac/login/logout=logout				
+				/rbac/**=authc
+				/standardSetup/**=authc
+				/backend/**=authc
+				
+				/weixin=anon
+				/weixin/oauth2=anon
+				/weixin/qrCode/**=anon
+				/weixin/createMenu=anon
+				
+				/weixin/customer/**=weiXinUser
+				
+				/weixin/workbench/login/**=weiXinUser		
+				/weixin/workbench/**=weiXinAuthc
+				/weixin/workbench/login/logout=logout		
+			</value>
+		</property>
+	</bean>
+	<!-- end shiro filter -->
+	
+    <!-- 自定义拦截器 -->  
+    <bean id="formFilter" class="cn.cnyirui.framework.extension.shiro.filter.ShiroFormAuthenticationFilter" />                                   	
+	
+	<!-- 缓存(用spring cache管理)  -->
+	<bean id="shiroCacheManager" class="cn.cnyirui.framework.extension.shiro.cache.spring.ShiroCacheManager">
+		<property name="cacheManager" ref="springCacheManager"/>	
+		<property name="usePrefix" value="true"/>	
+	</bean>
+	<bean id="shiroSessionDao" class="cn.cnyirui.framework.extension.shiro.cache.ShiroCacheSessionDao">
+		<constructor-arg ref="shiroCacheManager"/>
+		<property name="activeSessionsCacheName" value="activeSessionCache"/>
+	</bean>
+	<!-- realm -->
+	<bean id="shiroDbRealm" class="cn.cnyirui.framework.extension.shiro.ShiroDbRealm" depends-on="sysUserService,captchaService"/>	
+
+	<!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+
+	<!-- AOP式方法级权限检查 -->
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+		depends-on="lifecycleBeanPostProcessor">
+		<property name="proxyTargetClass" value="true" />
+	</bean>
+
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod" value="org.apache.shiro.SecurityUtils.setSecurityManager" />
+		<property name="arguments" ref="shiroSecurityManager" />
+	</bean>
+
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="shiroSecurityManager" />
+	</bean>
+	
+</beans>

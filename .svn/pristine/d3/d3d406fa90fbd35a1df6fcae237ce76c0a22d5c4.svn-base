@@ -1,0 +1,21 @@
+# For JBoss: Avoid to setup Log4J outside $JBOSS_HOME/server/default/deploy/log4j.xml!
+# For all other servers: Comment out the Log4J listener in web.xml to activate Log4J.
+log4j.rootLogger=stdout
+#log4j.rootLogger=INFO, stdout
+#log4j.rootLogger=stdout
+
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d %p [%c] - %m%n
+
+log4j.category.org.springframework = DEBUG
+log4j.category.org.org.springframework.validation = DEBUG
+log4j.category.org.springframework.core.convert = DEBUG
+log4j.logger.org.hibernate=WARN
+log4j.logger.com.mchange=WARN
+log4j.logger.org.apache.shiro=WARN
+log4j.logger.net.sf.ehcache=WARN
+log4j.logger.org.jboss=WARN
+log4j.logger.com.alibaba.druid=WARN
+log4j.logger.org.apache.commons=WARN
+log4j.logger.org.apache.http=WARN

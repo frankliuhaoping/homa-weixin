@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+          default-lazy-init="true">
+
+	<bean id="wxMpConfigStorage" class="cn.cnyirui.framework.extension.weixin.WxMpSpringCacheConfigStorge">  
+	<!-- <bean id="wxMpConfigStorage" class="me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage">  -->
+		<property name="appId" value="${weixin.appId}" />
+		<property name="secret" value="${weixin.secret}" />
+		<property name="token" value="${weixin.token}" />
+		<property name="aesKey" value="${weixin.aesKey}" />
+		<property name="cacheManager" ref="springCacheManager"/> 
+	</bean>
+
+	<bean id="wxMpService" class="me.chanjar.weixin.mp.api.WxMpServiceImpl">
+		<property name="wxMpConfigStorage" ref="wxMpConfigStorage" />
+	</bean>
+
+	<bean id="weiXinUserFilter" class="cn.cnyirui.framework.extension.shiro.filter.WeiXinUserFilter">
+		<property name="wxMpConfigStorage" ref="wxMpConfigStorage" />
+		<property name="wxMpService" ref="wxMpService" />
+	</bean>
+	
+	<bean id="weiXinAuthcFilter" class="cn.cnyirui.framework.extension.shiro.filter.WeiXinAuthenticationFilter">
+		<property name="wxMpConfigStorage" ref="wxMpConfigStorage" />
+		<property name="wxMpService" ref="wxMpService" />
+		<property name="weiXinUserService" ref="weiXinUserService"/>
+		<property name="sysLogService" ref="sysLogService"/>
+	</bean>	
+	
+	<bean id="wxMpMessageRouter" class="me.chanjar.weixin.mp.api.WxMpMessageRouter">
+		<constructor-arg ref="wxMpService" />
+	</bean>	
+</beans>

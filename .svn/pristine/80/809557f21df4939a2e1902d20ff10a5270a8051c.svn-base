@@ -1,0 +1,152 @@
+#content {
+    width: 100%;
+    margin: 0 auto;
+}
+.tit {
+    height: 55px;
+    line-height: 85px;
+    margin: 20px 0px;
+    text-align: center;
+    font-size: 16px;
+    letter-spacing: 1.5px;
+}
+#time {
+    width: 50px;
+    margin: 10px auto;
+    font-size: 12px;
+    padding: 3px;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    background: #cecece;
+    visibility: hidden;
+}
+#sound {
+    position: relative;
+    height: 35px;
+    margin: 0 auto 10px;
+    width: 170px;
+    line-height: 35px;
+    border-radius: 4px;
+    display: none;
+}
+#sound:before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    right: -17px;
+    width: 0;
+    height: 0;
+    font-size: 0;
+    background: #fff;
+    border: solid 8px;
+    border-color: #FFFFFF #FFFFFF #FFFFFF #a2e759;
+}
+#aftersound {
+    position: absolute;
+    right: -3px;
+    height: 35px;
+    background: #a2e759;
+    border-radius: 4px;
+}
+.hold-sound {
+    position: relative;
+    height: 35px;
+    margin: 0 auto 10px;
+    width: 170px;
+    line-height: 35px;
+    border-radius: 4px;
+    display: block;
+}
+#holdsay {
+    position: absolute;
+    right: -8px;
+    width: 60px !important;
+    height: 100%;
+    visibility: hidden;
+}
+#sound span {
+    position: absolute;
+    left: -30px;
+    color: #ddd;
+}
+#sound img {
+    width: 13px;
+    position: absolute;
+    top: 8px;
+    right: 15px;
+}
+.again {
+    position: absolute;
+    bottom: 130px;
+    left: 0px;
+    right: 0;
+    text-align: center;
+    letter-spacing: 2px;
+    color: #ccc;
+}
+
+#mask {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 9;
+    background: rgba(0, 0, 0, .6);
+}
+#record {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    height: 135px;
+    width: 135px;
+    display: none;
+}
+#record img {
+    width: 100%;
+    display: block;
+    margin: 0 auto;
+}
+.record_info {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    color: #ccc;
+}
+.cancel-send {
+    font-size: 12px;
+position: absolute;
+left: 8px;
+bottom: 10px;
+padding: 3px;
+background: #a5373a;
+text-align: center;
+width: 85%;
+color: #fff;
+border-radius: 2px;
+}
+#endtime,.shortRecord,#slideRecord {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 135px;
+    height: 135px;
+    background: rgba(0, 0, 0, .55);
+    border-radius: 5px;
+    display: none;
+}
+.over {
+    height: 100px;
+    line-height: 100px;
+    display: block;
+    font-size: 88px;
+    color: #fff;
+    text-align: center;
+    width: 135px;
+}

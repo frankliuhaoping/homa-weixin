@@ -1,0 +1,342 @@
+CREATE OR REPLACE PROCEDURE "CREATECANVIEWORGANIZATIONLIST" 
+(
+	v_employeeId IN VARCHAR,
+  v_callId IN VARCHAR
+)
+AS
+	CURSOR cur IS
+	SELECT id FROM organization WHERE directorId = v_employeeId 
+	UNION
+	SELECT organizationId FROM EMP_ORG_PERMISSION WHERE employeeId = v_employeeId;
+	c_row cur%rowtype;
+BEGIN  
+	DELETE FROM organization_tree_temp WHERE callId = v_callId;
+	IF v_employeeId is null THEN
+		INSERT INTO organization_tree_temp(id, callId, organizationId, organizationName, depth, parentIds, parentNames)
+			SELECT ORG_TREE_TEMP_S.nextval, v_callId, id, name, depth, parentIds, parentNames FROM organization;
+	ELSE				
+		for c_row in cur loop
+			INSERT INTO organization_tree_temp(id, callId, organizationId, organizationName, depth, parentIds, parentNames)
+				SELECT ORG_TREE_TEMP_S.nextval, v_callId, id, name, depth, parentIds, parentNames FROM organization
+				WHERE parentIds LIKE ('%,' || c_row.id || ',%')
+        AND id NOT IN (SELECT organizationId FROM organization_tree_temp WHERE callId = v_callId);
+		end loop;
+	END IF;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE "CREATESUBORGANIZATIONLIST" 
+(
+  v_parentId IN VARCHAR2,
+  v_callId IN VARCHAR2
+)
+AS  
+BEGIN
+  DELETE FROM organization_tree_temp WHERE callId = v_callId;
+  IF v_parentId = '' THEN
+    INSERT INTO organization_tree_temp(id, callId, rootParentId, organizationId, organizationName, depth, parentIds, parentNames)
+      SELECT ORG_TREE_TEMP_S.nextval, v_callId, v_parentId, id, name, depth, parentIds, parentNames FROM organization;
+  ELSE
+    INSERT INTO organization_tree_temp(id, callId, rootParentId, organizationId, organizationName, depth, parentIds, parentNames)
+      SELECT ORG_TREE_TEMP_S.nextval, v_callId, v_parentId, id, name, LEVEL, SYS_CONNECT_BY_PATH(id, ','), SYS_CONNECT_BY_PATH(name, '\')  FROM ORGANIZATION
+      START WITH id = v_parentId
+      CONNECT BY PRIOR id = parentId;
+  END IF;
+END;
+/
+
+CREATE SEQUENCE  "WEIXIN_QRCODE_S"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 81 CACHE 20 NOORDER  NOCYCLE ;
+
+CREATE OR REPLACE TRIGGER "WEIXIN_QRCODE_T" before insert on WEIXIN_QRCODE
+for each row
+begin
+select WEIXIN_QRCODE_S.nextval into :new.SCENEID from sys.dual;
+end;
+
+
+
+/
+ALTER TRIGGER "WEIXIN_QRCODE_T" ENABLE;
+
+
+CREATE OR REPLACE FORCE VIEW "V_SALES_ORDER" ("CUSTOMERADDRESS", "CUSTOMERNAME", "CUSTOMERTEL", "INVOICEIMAGEURL", "INVOICENO", "SALESTIME", "SALESYEAR", "SALESMONTH", "CUSTOMERID", "SALERID", "ORGANIZATIONID", "PRICE", "QTY", "AMOUNT", "CASHBACK", "PRODUCTID", "WEIXINQRCODEID", "SALESMONEY", "RETMONEY", "ISUPLOAD", "ORDERNON") AS 
+  SELECT
+O.CUSTOMERADDRESS,
+O.CUSTOMERNAME,
+O.CUSTOMERTEL,
+O.INVOICEIMAGEURL,
+O.INVOICENO,
+O.SALESTIME,
+TO_CHAR(o.salesTime, 'YYYY') AS SALESYEAR,
+TO_CHAR(o.salesTime, 'MM') AS SALESMONTH,
+O.CUSTOMERID,
+O.SALERID,
+O.ORGANIZATIONID,
+D.PRICE,
+D.QTY,
+(d.price * d.qty) AS AMOUNT,
+D.CASHBACK,
+D.PRODUCTID,
+O.WEIXINQRCODEID,
+O.SALESMONEY,
+O.RETMONEY,
+O.ISUPLOAD,
+O.ORDERNON
+from sales_order o INNER JOIN sales_order_detail d on o.id = d.salesOrderId;
+
+CREATE OR REPLACE FORCE VIEW "V_SALES_ORDER_H" ("SALESYEAR", "SALERID", "ORGANIZATIONID", "QTY_MONTH1", "QTY_MONTH2", "QTY_MONTH3", "QTY_MONTH4", "QTY_MONTH5", "QTY_MONTH6", "QTY_MONTH7", "QTY_MONTH8", "QTY_MONTH9", "QTY_MONTH10", "QTY_MONTH11", "QTY_MONTH12", "AMOUNT_MONTH1", "AMOUNT_MONTH2", "AMOUNT_MONTH3", "AMOUNT_MONTH4", "AMOUNT_MONTH5", "AMOUNT_MONTH6", "AMOUNT_MONTH7", "AMOUNT_MONTH8", "AMOUNT_MONTH9", "AMOUNT_MONTH10", "AMOUNT_MONTH11", "AMOUNT_MONTH12", "TASK_MONTH1", "TASK_MONTH2", "TASK_MONTH3", "TASK_MONTH4", "TASK_MONTH5", "TASK_MONTH6", "TASK_MONTH7", "TASK_MONTH8", "TASK_MONTH9", "TASK_MONTH10", "TASK_MONTH11", "TASK_MONTH12", "TYPE") AS 
+  SELECT a.salesYear,
+       a.salerId,
+       a.organizationId,
+       a.qty_month1,
+       a.qty_month2,
+       a.qty_month3,
+       a.qty_month4,
+       a.qty_month5,
+       a.qty_month6,
+       a.qty_month7,
+       a.qty_month8,
+       a.qty_month9,
+       a.qty_month10,
+       a.qty_month11,
+       a.qty_month12,
+       a.amount_month1,
+       a.amount_month2,
+       a.amount_month3,
+       a.amount_month4,
+       a.amount_month5,
+       a.amount_month6,
+       a.amount_month7,
+       a.amount_month8,
+       a.amount_month9,
+       a.amount_month10,
+       a.amount_month11,
+       a.amount_month12,
+       NVL(b.month1, 0) task_month1,
+       NVL(b.month2, 0) task_month2,
+       NVL(b.month3, 0) task_month3,
+       NVL(b.month4, 0) task_month4,
+       NVL(b.month5, 0) task_month5,
+       NVL(b.month6, 0) task_month6,
+       NVL(b.month7, 0) task_month7,
+       NVL(b.month8, 0) task_month8,
+       NVL(b.month9, 0) task_month9,
+       NVL(b.month10, 0) task_month10,
+       NVL(b.month11, 0) task_month11,
+       NVL(b.month12, 0) task_month12£¬ NVL(b.type, 0) type
+  FROM (SELECT s.salesYear,
+               s.salerId,
+               s.organizationId,
+               SUM(CASE
+                     WHEN s.salesMonth = 1 THEN
+                      s.qty
+                     ELSE
+                      0
+                   END) qty_month1,
+               SUM(CASE
+                     WHEN s.salesMonth = 2 THEN
+                      s.qty
+                     ELSE
+                      0
+                   END) qty_month2,
+               SUM(CASE
+                     WHEN s.salesMonth = 3 THEN
+                      s.qty
+                     ELSE
+                      0
+                   END) qty_month3,
+               SUM(CASE
+                     WHEN s.salesMonth = 4 THEN
+                      s.qty
+                     ELSE
+                      0
+                   END) qty_month4,
+               SUM(CASE
+                     WHEN s.salesMonth = 5 THEN
+                      s.qty
+                     ELSE
+                      0
+                   END) qty_month5,
+               SUM(CASE
+                     WHEN s.salesMonth = 6 THEN
+                      s.qty
+                     ELSE
+                      0
+                   END) qty_month6,
+               SUM(CASE
+                     WHEN s.salesMonth = 7 THEN
+                      s.qty
+                     ELSE
+                      0
+                   END) qty_month7,
+               SUM(CASE
+                     WHEN s.salesMonth = 8 THEN
+                      s.qty
+                     ELSE
+                      0
+                   END) qty_month8,
+               SUM(CASE
+                     WHEN s.salesMonth = 9 THEN
+                      s.qty
+                     ELSE
+                      0
+                   END) qty_month9,
+               SUM(CASE
+                     WHEN s.salesMonth = 10 THEN
+                      s.qty
+                     ELSE
+                      0
+                   END) qty_month10,
+               SUM(CASE
+                     WHEN s.salesMonth = 11 THEN
+                      s.qty
+                     ELSE
+                      0
+                   END) qty_month11,
+               SUM(CASE
+                     WHEN s.salesMonth = 12 THEN
+                      s.qty
+                     ELSE
+                      0
+                   END) qty_month12,
+               SUM(CASE
+                     WHEN s.salesMonth = 1 THEN
+                      s.amount
+                     ELSE
+                      0
+                   END) amount_month1,
+               SUM(CASE
+                     WHEN s.salesMonth = 2 THEN
+                      s.amount
+                     ELSE
+                      0
+                   END) amount_month2,
+               SUM(CASE
+                     WHEN s.salesMonth = 3 THEN
+                      s.amount
+                     ELSE
+                      0
+                   END) amount_month3,
+               SUM(CASE
+                     WHEN s.salesMonth = 4 THEN
+                      s.amount
+                     ELSE
+                      0
+                   END) amount_month4,
+               SUM(CASE
+                     WHEN s.salesMonth = 5 THEN
+                      s.amount
+                     ELSE
+                      0
+                   END) amount_month5,
+               SUM(CASE
+                     WHEN s.salesMonth = 6 THEN
+                      s.amount
+                     ELSE
+                      0
+                   END) amount_month6,
+               SUM(CASE
+                     WHEN s.salesMonth = 7 THEN
+                      s.amount
+                     ELSE
+                      0
+                   END) amount_month7,
+               SUM(CASE
+                     WHEN s.salesMonth = 8 THEN
+                      s.amount
+                     ELSE
+                      0
+                   END) amount_month8,
+               SUM(CASE
+                     WHEN s.salesMonth = 9 THEN
+                      s.amount
+                     ELSE
+                      0
+                   END) amount_month9,
+               SUM(CASE
+                     WHEN s.salesMonth = 10 THEN
+                      s.amount
+                     ELSE
+                      0
+                   END) amount_month10,
+               SUM(CASE
+                     WHEN s.salesMonth = 11 THEN
+                      s.amount
+                     ELSE
+                      0
+                   END) amount_month11,
+               SUM(CASE
+                     WHEN s.salesMonth = 12 THEN
+                      s.amount
+                     ELSE
+                      0
+                   END) amount_month12
+          FROM v_sales_order s
+         GROUP BY s.salesYear, s.salerId, s.organizationId) a
+  left join sales_task b on a.salesYear = b.year
+                        and a.salerId = b.employeeid
+;
+
+
+CREATE OR REPLACE FORCE VIEW "V_SALES_ORDER_PRODUCT" ("CUSTOMERADDRESS", "CUSTOMERNAME", "CUSTOMERTEL", "INVOICEIMAGEURL", "INVOICENO", "SALESTIME", "SALESYEAR", "SALESMONTH", "CUSTOMERID", "SALERID", "ORGANIZATIONID", "PRICE", "QTY", "AMOUNT", "CASHBACK", "PRODUCTID", "PRODUCTNAME", "PRODUCTCATEGORYID", "PRODUCTCATEGORYNAME", "WEIXINQRCODEID", "SALESMONEY", "RETMONEY", "ISUPLOAD", "ORDERNON") AS 
+  SELECT
+s.CUSTOMERADDRESS,
+s.CUSTOMERNAME,
+s.CUSTOMERTEL,
+s.INVOICEIMAGEURL,
+s.INVOICENO,
+s.SALESTIME,
+s.SALESYEAR,
+s.SALESMONTH,
+s.CUSTOMERID,
+s.SALERID,
+s.ORGANIZATIONID,
+s.PRICE,
+s.QTY,
+s.AMOUNT,
+s.CASHBACK,
+s.PRODUCTID,
+p.NAME PRODUCTNAME,
+c.ID PRODUCTCATEGORYID,
+c.NAME PRODUCTCATEGORYNAME,
+s.WEIXINQRCODEID,
+s.SALESMONEY,
+s.RETMONEY,
+s.ISUPLOAD,
+s.ORDERNON
+from v_sales_order s inner join product p on s.PRODUCTID = p.id
+left join product_category c on p.categoryid = c.id
+;
+
+
+CREATE OR REPLACE FORCE VIEW "V_SALES_ORDER_EMPLOYEE" ("CUSTOMERADDRESS", "CUSTOMERNAME", "CUSTOMERTEL", "INVOICEIMAGEURL", "INVOICENO", "SALESTIME", "SALESYEAR", "SALESMONTH", "CUSTOMERID", "SALERID", "SALERNAME", "SALERTYPETEXT", "SALERTYPE", "IDNUMBER", "ORGANIZATIONID", "ORGANIZATIONNAME", "PRICE", "QTY", "AMOUNT", "CASHBACK", "PRODUCTID", "WEIXINQRCODEID", "SALESMONEY", "RETMONEY", "ISUPLOAD", "ORDERNON") AS 
+  SELECT
+s.CUSTOMERADDRESS,
+s.CUSTOMERNAME,
+s.CUSTOMERTEL,
+s.INVOICEIMAGEURL,
+s.INVOICENO,
+s.SALESTIME,
+s.SALESYEAR,
+s.SALESMONTH,
+s.CUSTOMERID,
+s.SALERID,
+e.NAME SALERNAME,
+CASE WHEN e.SALERTYPE = 1 THEN '¼æÖ°' ELSE '×¨Ö°' END SALERTYPETEXT,
+NVL(e.SALERTYPE, 0) SALERTYPE,
+e.IDNUMBER,
+s.ORGANIZATIONID,
+to_char(o.PARENTNAMES) ORGANIZATIONNAME,
+s.PRICE,
+s.QTY,
+s.AMOUNT,
+s.CASHBACK,
+s.PRODUCTID,
+s.WEIXINQRCODEID,
+s.SALESMONEY,
+s.RETMONEY,
+s.ISUPLOAD,
+s.ORDERNON
+from v_sales_order s inner join employee e on s.SALERID = e.id
+left join organization o on s.organizationid = o.id
+;

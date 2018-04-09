@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
+          default-lazy-init="true">
+
+    <!-- 数据源 -->
+    <!--see https://github.com/alibaba/druid/wiki/%E9%85%8D%E7%BD%AE_DruidDataSource%E5%8F%82%E8%80%83%E9%85%8D%E7%BD%AE-->
+    <bean id="imsDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <!-- 基本属性 url、user、password -->
+        <property name="url" value="${ims.connection.url}"/>
+        <property name="username" value="${ims.connection.username}"/>
+        <property name="password" value="${ims.connection.password}"/>
+
+        <!-- 配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="${druid.initialSize}"/>
+        <property name="minIdle" value="${druid.minIdle}"/>
+        <property name="maxActive" value="${druid.maxActive}"/>
+
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="${druid.maxWait}"/>
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="${druid.timeBetweenEvictionRunsMillis}" />
+
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="${druid.minEvictableIdleTimeMillis}" />
+
+        <property name="validationQuery" value="${druid.validationQuery}" />
+        <property name="testWhileIdle" value="${druid.testWhileIdle}" />
+        <property name="testOnBorrow" value="${druid.testOnBorrow}" />
+        <property name="testOnReturn" value="${druid.testOnReturn}" />
+
+        <!-- 打开PSCache，并且指定每个连接上PSCache的大小  如果用Oracle，则把poolPreparedStatements配置为true，mysql可以配置为false。-->
+        <property name="poolPreparedStatements" value="${druid.poolPreparedStatements}" />
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="${druid.maxPoolPreparedStatementPerConnectionSize}" />
+
+        <!-- 配置监控统计拦截的filters -->
+        <property name="filters" value="${druid.filters}" />
+    </bean>
+
+    <!-- jpa Entity Factory 配置 -->
+    <bean id="imsEntityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="imsDataSource"/>
+        <property name="packagesToScan" value="cn.cnyirui.ims.entity.**"/>
+        <property name="persistenceUnitName" value="${ims.jpa.persistenceUnitName}"/>
+        <property name="persistenceProvider">
+            <bean class="org.hibernate.jpa.HibernatePersistenceProvider"/>
+        </property>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="generateDdl" value="false"/>
+                <property name="database" value="${jpa.database}"/>
+                <property name="databasePlatform" value="${jpa.databasePlatform}"/>
+                <property name="showSql" value="${jpa.showSql}"/>
+            </bean>
+        </property>
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
+        </property>
+        <property name="jpaPropertyMap">
+            <map>
+                <!-- 只扫描class文件，不扫描hbm，默认两个都搜索 -->
+                <entry key="hibernate.archive.autodetection" value="class"/>
+                <!-- 不检查@NamedQuery -->
+                <entry key="hibernate.query.startup_check" value="false"/>
+				<!-- Hibernate里面输入true的时候，Hibernate会转化为0插入数据库，当你在Hibernate里面输入false的时候，Hibernate会转化为1插入数据库 -->
+                <entry key="hibernate.query.substitutions" value="${hibernate.query.substitutions}"/>
+                <entry key="hibernate.default_batch_fetch_size" value="${hibernate.default_batch_fetch_size}"/>
+                <entry key="hibernate.max_fetch_depth" value="${hibernate.max_fetch_depth}"/>
+                <entry key="hibernate.generate_statistics" value="${hibernate.generate_statistics}"/>
+                <entry key="hibernate.bytecode.use_reflection_optimizer" value="${hibernate.bytecode.use_reflection_optimizer}"/>
+                <!-- <entry key="hibernate.cache.use_second_level_cache" value="${hibernate.cache.use_second_level_cache}"/>
+                <entry key="hibernate.cache.use_query_cache" value="${hibernate.cache.use_query_cache}"/>
+                <entry key="hibernate.cache.region.factory_class" value="${hibernate.cache.region.factory_class}"/> 
+                <entry key="net.sf.ehcache.configurationResourceName" value="${net.sf.ehcache.configurationResourceName}"/>  -->
+                <entry key="hibernate.cache.use_structured_entries" value="${hibernate.cache.use_structured_entries}"/>
+				<entry key="hibernate.format_sql" value="${jpa.showSql}"/>
+            </map>
+        </property>
+    </bean>
+
+    <!--事务管理器配置-->
+    <bean id="imsTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="imsEntityManagerFactory"/>
+    </bean> 
+	<!-- 启用注解事务 -->
+	<tx:annotation-driven transaction-manager="imsTransactionManager"/>
+</beans>

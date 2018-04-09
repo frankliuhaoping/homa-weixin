@@ -1,0 +1,13 @@
+/* 2015-12-11 lizhongzhi */
+.no-data{margin: 0.5rem 0 1.75rem;padding: 0 0.75rem;font-size: 0.7rem;color: #5f646e;text-align:center;} 
+.more_content p.p_text{word-wrap: break-word;}
+.table_div p.p_text{word-wrap: break-word;}
+
+/* 2015-12-30 ø…Õœ¿≠∞¥≈• */
+#layer_Bg{position: fixed;width: 100%;height: 100%; background-color: rgba(0, 0, 0, 0.5);z-index: 9999;}
+#fixBtn{position: fixed; width: 48px; height: 48px; background-color:rgba(0, 0, 0, 0.2);right: 0; top:50%; border-radius: 5px;z-index: 10000;}
+#fixBtn .fixBtn_one{width: 100%; height: 100%; box-sizing: border-box; border:5px solid #c3c3c3; background-color: #e8e8e8;border-radius: 50%;-webkit-transform:scale(0.8);}
+#fixBtn .fixBtn_c{position: absolute;width: 64px; height: 84px;left: 0;top:0; display: none; } 
+.move_btn_hide{display: none;}
+#fixBtn .fixBtn_c i{font-size:3em;  display: block;color: #fff;text-align: center;}
+#fixBtn .fixBtn_c span{display:inline-block;width:100%; text-align: center;color:#fff}

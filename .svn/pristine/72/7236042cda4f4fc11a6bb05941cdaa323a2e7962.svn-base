@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+	default-lazy-init="true">
+
+
+	<!-- <bean id="sentinelConfig"
+		class="org.springframework.data.redis.connection.RedisSentinelConfiguration">
+		<constructor-arg name="master" value="mymaster" />
+		<constructor-arg name="sentinelHostAndPorts">
+			<set>
+				<value>127.0.0.1:26379</value>
+				<value>127.0.0.1:26380</value>
+			</set>
+		</constructor-arg>
+	</bean>  -->
+	<!-- spring data redis -->
+	<bean id="jedisConnectionFactory"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<!-- <constructor-arg name="sentinelConfig" ref="sentinelConfig" />  --> 
+		<property name="hostName" value="${redis.host}" />
+		<property name="port" value="${redis.port}" />
+		<property name="timeout" value="${redis.timeout}" />
+		<property name="database" value="${redis.database}"></property>
+
+		<property name="poolConfig.maxTotal" value="${redis.maxActive}" />
+		<property name="poolConfig.maxIdle" value="${redis.maxIdle}" />
+		<property name="poolConfig.maxWaitMillis" value="${redis.maxWait}" />
+		<property name="poolConfig.testOnBorrow" value="${redis.testOnBorrow}" />
+	</bean>
+
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory" ref="jedisConnectionFactory" />
+		<property name="keySerializer" ref="stringRedisSerializer" />
+		<property name="hashKeySerializer" ref="stringRedisSerializer" />
+	</bean>
+	<bean id="stringRedisSerializer"
+		class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+
+	<!-- redis cache manager -->
+	<bean id="redisCachePrefix"
+		class="org.springframework.data.redis.cache.DefaultRedisCachePrefix">
+		<constructor-arg value=":${maven.artifactId}:" />
+	</bean>
+	
+	<bean id='springCacheManager' class='org.springframework.data.redis.cache.RedisCacheManager'>
+		<constructor-arg ref="redisTemplate" />
+		<property name="usePrefix" value="true" />
+		<property name="cachePrefix" ref="redisCachePrefix" />
+	</bean>  
+	<!-- <bean id="springCacheManager" class="org.springframework.cache.concurrent.ConcurrentMapCacheManager"/> -->
+</beans>

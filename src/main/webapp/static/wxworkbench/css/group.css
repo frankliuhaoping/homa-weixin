@@ -1,0 +1,191 @@
+@charset "utf-8";
+/* 简单流媒体
+   注意: 流媒体要求您删除 HTML 中媒体的高度和宽度属性
+   http://www.alistapart.com/articles/fluid-images/ 
+*/
+img, object, embed, video {
+	max-width: 100%;
+}
+/* IE 6 不支持最大宽度，因此默认为 100% 宽度 */
+.ie6 img {
+	width:100%;
+}
+
+/*
+	Dreamweaver 流体网格属性
+	----------------------------------
+	dw-num-cols-mobile:		5;
+	dw-num-cols-tablet:		8;
+	dw-num-cols-desktop:	10;
+	dw-gutter-percentage:	25;
+	
+	灵感来自于 Ethan Marcotte 的“具有响应的 Web 设计” 
+	http://www.alistapart.com/articles/responsive-web-design
+	
+	和 Joni Korpi 的“黄金网格系统”
+	http://goldengridsystem.com/
+*/
+
+/* 移动设备布局: 480px 及更低。 */
+
+.gridContainer {
+	margin-left: auto;
+	margin-right: auto;
+	min-width:300px;
+	padding:0 10px;
+}
+#LayoutDiv1 {
+	clear: both;
+	float: left;
+	margin-left: 0;
+	width: 100%;
+	display: block;
+}
+
+/* 平板电脑布局: 481px 至 768px。样式继承自: 移动设备布局。 */
+
+@media only screen and (min-width: 481px) {
+.gridContainer {
+	width: 100%;
+	padding-left: 1.1625%;
+	padding-right: 1.1625%;
+}
+#LayoutDiv1 {
+	clear: both;
+	float: left;
+	margin-left: 0;
+	width: 100%;
+	display: block;
+}
+}
+
+/* 桌面电脑布局: 769px 至最高 1232px。样式继承自: 移动设备布局和平板电脑布局。 */
+
+@media only screen and (min-width: 769px) {
+.gridContainer {
+	width: 100%;
+	max-width: 1232px;
+	padding-left: 0.9%;
+	padding-right: 0.9%;
+	margin: auto;
+}
+#LayoutDiv1 {
+	clear: both;
+	float: left;
+	margin-left: 0;
+	width: 100%;
+	display: block;
+}
+}
+/*********** maple add 
+body{ background:#f2f2f2}
+***************/
+/*按钮样式*/
+.m_button {
+    outline: none;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    font: 16px/100% 'Microsoft yahei',Arial, Helvetica, sans-serif;
+    padding: .5em 2em .55em;
+    text-shadow: 0 1px 1px rgba(0,0,0,.3);
+    -webkit-border-radius: .5em;
+    -moz-border-radius: .5em;
+    border-radius: .5em;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    display: block;
+    margin:0 auto;
+}
+.m_button:hover {
+    text-decoration: none;
+}
+.m_button:active {
+    position: relative;
+    top: 1px;
+}
+.bigrounded {
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
+    border-radius: 2em;
+}
+.medium {
+    font-size: 12px;
+    padding: .4em 1.5em .42em;
+}
+.small {
+    font-size: 11px;
+    padding: .2em 1em .275em;
+}
+
+
+
+
+/** 阴影 **/
+.shadow{box-shadow: #999 1px 1px 4px;
+    -webkit-box-shadow: #999 1px 1px 4px;}
+/* 多選框 */
+.g_menbers ul li input[type="checkbox"] {
+    display: none;
+}
+.g_menbers ul li input[type="checkbox"] + label {
+    display: inline-block;
+   
+    cursor: pointer;
+    padding:10px 10px 0 10px;
+}
+.g_menbers ul li input[type="checkbox"]:checked + label {
+    background-color:#FFC; border-radius:8px;
+}
+/*end*/
+
+
+.fl{ float:left}
+.fr{ float:right}
+.clear{ clear:both;}
+
+
+/** 群组管理 **/
+.header_g{  padding:15px; }
+.groud_icon{ position: relative;}
+.groud_icon input{ 
+	width: 50px;
+    height: 50px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    opacity: 0;
+}
+.groud_icon img{ width:50px; height:50px;border-radius:50%;box-shadow: #999 1px 1px 4px;
+    -webkit-box-shadow: #999 1px 1px 4px;}
+.groud_txt{ height:50px; line-height:50px; margin-left:50px; padding-left:10px; font-size:1.4em; font-weight:bold;}
+.groud_sitting{ width:30px; height:50px;}
+.groud_sitting img{ width:25px;}
+.groud_intro{ height:auto; background:#FFF; padding:15px; border-radius:5px;}
+.g_i_l{ width:60px; font-size:1.2em; font-weight:bold;}
+.g_i_r{ margin-left:50px; font-size:1.1em; line-height:1.5em;}
+.g_menbers{ padding:10px 0 15px 0; position:relative;width:100%;text-align:center;}
+.g_menbers ul{ margin:0; padding:0;position:relative;left:50%;float:left}
+.g_menbers ul li{ list-style:none; float:left; width:auto;    padding: 4px 4px 0 2px; margin:3px 0 0 0 ; position:relative;
+    right:50%;
+    float:left;}
+.g_menbers ul li img{ width:59px; height:59px; border-radius:50%;box-shadow: #999 1px 1px 4px;
+    -webkit-box-shadow: #999 1px 1px 4px;}
+.g_menbers ul li p{ text-align:center; width:85%; margin:8px auto 10px auto;}
+.g_btn{ margin:10px 0; width:100%;}
+
+/** 群组管理 end**/
+
+/*** 个人信息 **/
+.header_p{ padding:15px; border-bottom:#CCC 1px solid;}
+.personal_icon{ width:65px; padding-right:10px;padding-top: 5px;}
+.personal_txt span{ font-size:1.4em; font-weight:bold; line-height:35px;}
+.personal_txt p{ margin:0; padding:0; line-height:30px; height:30px; font-size:1.2em;}
+.personal_intro{ margin-bottom:30px;}
+.personal_intro ul{ margin:0; padding-left:15px;}
+.personal_intro ul li{ list-style:none; border-bottom:#CCC 1px solid; padding:10px;}
+.personal_intro ul li p{ margin:0; padding:5px 5px 0 0; font-size:1.2em; line-height:25px;}
+.personal_intro ul li span{ display: block;font-size: 1.3em; line-height:25px;font-weight: bold;}
+.personal_icon img{ border-radius: 50%;}
+/*** 个人信息 end **/

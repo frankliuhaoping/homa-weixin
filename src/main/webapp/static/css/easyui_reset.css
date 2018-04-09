@@ -1,0 +1,130 @@
+@CHARSET "UTF-8";
+/* reset easyui font*/
+.panel-body {
+	font-size: 13px;
+}
+.panel-title {
+	font-size: 13px;
+ }
+.l-btn-text {
+	line-height: 24px;
+	font-size: 13px;
+ }
+.textbox .textbox-text {
+	font-size: 13px;
+}
+.textbox .textbox-prompt {
+	font-size: 13px;
+}
+.combo .combo-text {
+	font-size: 13px;
+}
+.combobox-item,
+.combobox-group {
+	font-size: 13px;
+}
+.tabs-title {
+	font-size: 13px;
+}
+.datagrid-cell,
+.datagrid-cell-group,
+.datagrid-header-rownumber,
+.datagrid-cell-rownumber {
+	height: 18px;
+	line-height: 18px;
+	font-size: 13px;
+}
+.datagrid-header .datagrid-cell span {
+	font-size: 13px;
+}
+.datagrid-view .datagrid-editable-input {
+	font-size: 13px;
+}
+.pagination-info {
+	height: 30px;
+	line-height: 30px;
+	font-size: 13px;
+}
+.pagination span {
+	font-size: 13px;
+}
+.calendar table {
+	font-size: 13px;
+}
+.calendar table td,
+.calendar table th {
+	font-size: 13px;
+}
+.calendar-title span {
+	height: 18px;
+	line-height: 18px;
+	font-size: 13px;
+}
+.calendar-menu {
+	height: 150px;
+	font-size: 13px;
+}
+.calendar-menu-year {
+	font-size: 13px;
+}
+.datebox-button a {
+	font-size: 13px;
+}
+.spinner .spinner-text {
+	font-size: 13px;
+}
+.progressbar-text {
+	font-size: 13px;
+}
+.searchbox .searchbox-text {
+	font-size: 13px;
+}
+.searchbox .searchbox-prompt {
+	font-size: 13px;
+}
+.slider-tip {
+	line-height: 12px;
+	font-size: 13px;
+}
+.slider-rulelabel span {
+	font-size: 13px;
+}
+.menu-text,
+.menu-text span {
+	font-size: 13px;
+}
+.tree-title {
+	font-size: 13px;
+}
+.tree-node-proxy {
+	font-size: 13px;
+}
+.tree-editor {
+	font-size: 13px;
+	height: 14px !important;
+	height: 18px;
+	line-height: 14px;
+}
+.tooltip-content {
+	font-size: 13px;
+}
+.switchbutton-on,
+.switchbutton-off,
+.switchbutton-handle {
+	font-size: 13px;
+}
+.datagrid-header-row, .datagrid-row{
+	height: 40px!important;
+}
+.datagrid-header td, .datagrid-body td, .datagrid-footer td{
+	border-color: #ddd;
+	border-style: solid;
+}
+.datagrid-btn-separator{
+	margin:2px 3px 2px 0px;
+}
+.tree-node{
+	height:34px;
+	padding:8px 0;
+	box-sizing: border-box;
+}

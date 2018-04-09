@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemesh>
+    <mapping path="/**/save*" exclue="true" />
+    <mapping path="/static/*" exclue="true" />
+    <mapping path="/upload/*" exclue="true" />
+    <mapping path="/rbac/login/showDialog" exclue="true" />
+    <mapping path="/weixin/workbench/login/**" exclue="true"/>
+    <mapping path="/weixin/workbench/marketing/experience/doAdd**" exclue="true"/>
+    <mapping path="/backend/organization/list**" exclue="true"/>
+    
+    <mapping path="/rbac/login/*" decorator="/WEB-INF/sitemesh/header_template.jsp" />    
+    <mapping path="/standardSetup/**/list" decorator="/WEB-INF/sitemesh/header_template.jsp" />    
+    <mapping path="/backend/**/list" decorator="/WEB-INF/sitemesh/header_template.jsp" />    
+    <mapping path="/rbac/**/list" decorator="/WEB-INF/sitemesh/header_template.jsp" />    
+    <mapping path="/rbac/index" decorator="/WEB-INF/sitemesh/header_template.jsp" />    
+    <mapping path="/backend/index" decorator="/WEB-INF/sitemesh/header_template.jsp" />
+     <mapping path="/weixin/workbench/**" decorator="/WEB-INF/sitemesh/wx_header_template.jsp"/>    
+</sitemesh>
